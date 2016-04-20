@@ -61,7 +61,6 @@ def main():
     experienced_players = [player for player in entire_league if player["Soccer Experience"] == "YES"]
     inexperienced_players = [player for player in entire_league if player["Soccer Experience"] == "NO"]
 
-
     #uses enumerate to provide even indexed lists
     for position, player in enumerate(experienced_players + inexperienced_players):
         teams[position % len(teams)].append(player)
