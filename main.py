@@ -5,7 +5,7 @@ import csv
 #Three base team placeholders
 teams = [[], [], []]
 #Email template to be formated with team info later
-emailTemp = """Dear {}, \n    Your child was placed on the {} team! They will
+emailTemp = """Dear {}, \n    {} was placed on the {} team! They will
     conduct their next practice {}, Hope to see 
     you all there!"""
 #Practices for each team    
@@ -14,7 +14,7 @@ SharkPrac = 'March 17, at 3pm'
 RaptorPrac = 'March 18, at 1pm'
 
 #Prints the input team's roster
-#couldn't find a way to turn the list varible into a string..
+#couldn't find a way to turn the list variable ie. Dragons == "Dragons"
 def roster(team):
     if team == Dragons:
         #using a count throw away variable so the teams are numbered
@@ -44,40 +44,47 @@ def email(team):
         with open(filename, 'a') as txt:
             #formats the email template according to the team
             if team == Dragons:
-                txt.write(emailTemp.format(player['Guardian Name(s)'], 'Dragons', DragonPrac))
+                txt.write(emailTemp.format(player['Guardian Name(s)'], player['Name'], 'Dragons', DragonPrac))
             elif team == Sharks:
-                txt.write(emailTemp.format(player['Guardian Name(s)'], 'Sharks', SharkPrac))
+                txt.write(emailTemp.format(player['Guardian Name(s)'], player['Name'], 'Sharks', SharkPrac))
             elif team == Raptors:
-                txt.write(emailTemp.format(player['Guardian Name(s)'], 'Raptors', RaptorPrac))
+                txt.write(emailTemp.format(player['Guardian Name(s)'], player['Name'], 'Raptors', RaptorPrac))
 
-#opens soccer_players.csv and creates the entire_league list of dicts
-with open('soccer_players.csv', newline = '') as file:
-    data = csv.DictReader(file)
-    entire_league = [line for line in data]
+#calls needed functions based on team
+def main():
+    #opens soccer_players.csv and creates the entire_league list of dicts
+    with open('soccer_players.csv', newline = '') as file:
+        data = csv.DictReader(file)
+        entire_league = [line for line in data]
+    #Sorts the league into two lists, experienced players and inexperienced
+    #couldn't find a way to sort by height without using a lamda
+    experienced_players = [player for player in entire_league if player["Soccer Experience"] == "YES"]
+    inexperienced_players = [player for player in entire_league if player["Soccer Experience"] == "NO"]
 
-#Sorts the league into two lists, experienced players and inexperienced
-#couldn't find a way to sort by height without using a lamda
-experienced_players = [player for player in entire_league if player["Soccer Experience"] == "YES"]
-inexperienced_players = [player for player in entire_league if player["Soccer Experience"] == "NO"]
 
-#uses enumerate to provide even indexed lists
-for position, player in enumerate(experienced_players + inexperienced_players):
-    teams[position % len(teams)].append(player)
+    #uses enumerate to provide even indexed lists
+    for position, player in enumerate(experienced_players + inexperienced_players):
+        teams[position % len(teams)].append(player)
+    
+    for team in teamTup:
+        if team == Dragons:
+            roster(team)
+            email(team)
+        if team == Raptors:
+            roster(team)
+            email(team)
+        if team == Sharks:
+            roster(team)
+            email(team)
+
 #assigns team variables to the placeholder list teams
-Dragons = [team for team in teams[0]]
-Sharks = [team for team in teams[1]]
-Raptors = [team for team in teams[2]]
+Dragons = teams[0]
+Sharks = teams[1]
+Raptors = teams[2]
+
 #added them to a tuple to make it easy to iterate through them
 #I'm sure there is a much easier way to do this
 teamTup = (Dragons, Sharks, Raptors)
-#calls needed functions based on team
-for team in teamTup:
-    if team == Dragons:
-        roster(team)
-        email(team)
-    if team == Raptors:
-        roster(team)
-        email(team)
-    if team == Sharks:
-        roster(team)
-        email(team)
+
+if __name__ == '__main__':
+    main()
